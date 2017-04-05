@@ -459,7 +459,7 @@ public class HAInterestTestCase extends JUnit4DistributedTestCase {
         iter_prox = ccn.getClientProxies().iterator();
         if (iter_prox.hasNext()) {
           proxy = (CacheClientProxy) iter_prox.next();
-          return proxy._messageDispatcher.isAlive();
+          return proxy.getMessageDispatcherForTesting().isAlive();
         } else {
           return false;
         }
@@ -510,7 +510,7 @@ public class HAInterestTestCase extends JUnit4DistributedTestCase {
     if (iter_prox.hasNext()) {
       CacheClientProxy proxy = (CacheClientProxy) iter_prox.next();
       assertFalse("Dispatcher on secondary should not be alive",
-          proxy._messageDispatcher.isAlive());
+          proxy.getMessageDispatcherForTesting().isAlive());
     }
   }
 
@@ -818,7 +818,7 @@ public class HAInterestTestCase extends JUnit4DistributedTestCase {
       wc = new WaitCriterion() {
         @Override
         public boolean done() {
-          Set keysMap = (Set) ccp.cils[RegisterInterestTracker.interestListIndex]
+          Set keysMap = (Set) ccp.getClientInterestListForTesting()[RegisterInterestTracker.interestListIndex]
               .getProfile(Region.SEPARATOR + REGION_NAME).getKeysOfInterestFor(ccp.getProxyID());
           return keysMap != null && keysMap.size() == 2;
         }
@@ -830,7 +830,7 @@ public class HAInterestTestCase extends JUnit4DistributedTestCase {
       };
       Wait.waitForCriterion(wc, TIMEOUT_MILLIS, INTERVAL_MILLIS, true);
 
-      Set keysMap = (Set) ccp.cils[RegisterInterestTracker.interestListIndex]
+      Set keysMap = (Set) ccp.getClientInterestListForTesting()[RegisterInterestTracker.interestListIndex]
           .getProfile(Region.SEPARATOR + REGION_NAME).getKeysOfInterestFor(ccp.getProxyID());
       assertNotNull(keysMap);
       assertEquals(2, keysMap.size());
@@ -879,7 +879,7 @@ public class HAInterestTestCase extends JUnit4DistributedTestCase {
       wc = new WaitCriterion() {
         @Override
         public boolean done() {
-          Set keysMap = (Set) ccp.cils[RegisterInterestTracker.interestListIndex]
+          Set keysMap = (Set) ccp.getClientInterestListForTesting()[RegisterInterestTracker.interestListIndex]
               .getProfile(Region.SEPARATOR + REGION_NAME).getKeysOfInterestFor(ccp.getProxyID());
           return keysMap != null;
         }
@@ -891,7 +891,7 @@ public class HAInterestTestCase extends JUnit4DistributedTestCase {
       };
       Wait.waitForCriterion(wc, TIMEOUT_MILLIS, INTERVAL_MILLIS, true);
 
-      Set keysMap = (Set) ccp.cils[RegisterInterestTracker.interestListIndex]
+      Set keysMap = (Set) ccp.getClientInterestListForTesting()[RegisterInterestTracker.interestListIndex]
           .getProfile(Region.SEPARATOR + REGION_NAME).getKeysOfInterestFor(ccp.getProxyID());
       assertNotNull(keysMap);
       assertEquals(1, keysMap.size());

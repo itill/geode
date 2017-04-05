@@ -14,9 +14,12 @@
  */
 package org.apache.geode.internal.cache.tier.sockets.command;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.apache.commons.io.FileUtils.*;
+import static org.apache.geode.distributed.AbstractLauncher.Status.ONLINE;
 import static org.apache.geode.test.dunit.NetworkUtils.getIPLiteral;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.*;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +27,7 @@ import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.client.ClientRegionShortcut;
+import org.apache.geode.distributed.AbstractLauncher.Status;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.distributed.ServerLauncher;
 import org.apache.geode.distributed.internal.DistributionConfig;
@@ -121,15 +125,21 @@ public class ClientCachePutBench {
       command.add(ServerLauncher.Command.START.getName());
       command.add("server1");
       command.add("--server-port=" + this.serverPort);
-      // command.add("--redirect-output");
+      // put65Command.add("--redirect-output");
 
       this.process = new ProcessBuilder(command).directory(this.temporaryFolder.getRoot()).start();
 
-      boolean forever = true;
-      while (forever) {
+      boolean sleep = false;
+      while (sleep) {
         assertThat(this.process.isAlive()).isTrue();
         Thread.sleep(10000);
       }
+
+      ServerLauncher serverLauncher = new ServerLauncher.Builder()
+          .setWorkingDirectory(this.temporaryFolder.getRoot().getAbsolutePath()).build();
+
+      await().atMost(2, MINUTES)
+          .until(() -> assertThat(serverLauncher.status().getStatus()).isEqualTo(ONLINE));
 
       this.clientCache =
           new ClientCacheFactory().addPoolServer(getIPLiteral(), this.serverPort).create();
