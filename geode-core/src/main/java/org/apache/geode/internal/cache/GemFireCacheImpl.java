@@ -3936,6 +3936,25 @@ public class GemFireCacheImpl
     }
   }
 
+  private static final int PURGE_INTERVAL = 1000;
+  private int cancelCount = 0;
+
+  /**
+   * Does a periodic purge of the CCPTimer to prevent a large number of cancelled tasks from
+   * building up in it. See GEODE-2485.
+   */
+  public void purgeCCPTimer() {
+    synchronized (ccpTimerMutex) {
+      if (ccpTimer != null) {
+        cancelCount++;
+        if (cancelCount == PURGE_INTERVAL) {
+          cancelCount = 0;
+          ccpTimer.timerPurge();
+        }
+      }
+    }
+  }
+
   /**
    * @see LocalRegion
    */

@@ -690,7 +690,10 @@ public class TXManagerImpl implements CacheTransactionManager, MembershipListene
       tx.resume();
       SystemTimerTask task = this.expiryTasks.remove(tx.getTransactionId());
       if (task != null) {
-        task.cancel();
+        if (task.cancel()) {
+          GemFireCacheImpl cache = (GemFireCacheImpl) this.cache;
+          cache.purgeCCPTimer();
+        }
       }
     }
   }
