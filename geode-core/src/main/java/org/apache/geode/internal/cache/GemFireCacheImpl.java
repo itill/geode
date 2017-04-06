@@ -2437,7 +2437,7 @@ public class GemFireCacheImpl
         }
         ((DynamicRegionFactoryImpl) DynamicRegionFactory.get()).close();
         if (this.txMgr != null) {
-          this.txMgr.resume(tx);
+          this.txMgr.internalResume(tx);
         }
         TXCommitMessage.getTracker().clearForCacheClose();
       }

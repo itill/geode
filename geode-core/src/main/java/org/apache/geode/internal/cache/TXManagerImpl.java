@@ -675,7 +675,7 @@ public class TXManagerImpl implements CacheTransactionManager, MembershipListene
    * @param tx the transaction to activate.
    * @throws IllegalStateException if this thread already has an active transaction
    */
-  public final void resume(TXStateProxy tx) {
+  public final void internalResume(TXStateProxy tx) {
     if (tx != null) {
       TransactionId tid = getTransactionId();
       if (tid != null) {
@@ -1268,7 +1268,7 @@ public class TXManagerImpl implements CacheTransactionManager, MembershipListene
       throw new IllegalStateException(
           LocalizedStrings.TXManagerImpl_UNKNOWN_TRANSACTION_OR_RESUMED.toLocalizedString());
     }
-    resume(txProxy);
+    internalResume(txProxy);
   }
 
   public boolean isSuspended(TransactionId transactionId) {
@@ -1281,7 +1281,7 @@ public class TXManagerImpl implements CacheTransactionManager, MembershipListene
     }
     TXStateProxy txProxy = this.suspendedTXs.remove(transactionId);
     if (txProxy != null) {
-      resume(txProxy);
+      internalResume(txProxy);
       return true;
     }
     return false;

@@ -3972,7 +3972,7 @@ public class DistributedRegion extends LocalRegion implements CacheDistributionA
       }
     } finally {
       if (tx != null) {
-        cache.getTXMgr().resume(tx);
+        cache.getTXMgr().internalResume(tx);
       }
     }
     return tag;

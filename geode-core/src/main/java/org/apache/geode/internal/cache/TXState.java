@@ -1683,7 +1683,7 @@ public class TXState implements TXStateInterface {
         try {
           return pr.nonTXGetEntry(curr, false, allowTombstones);
         } finally {
-          txmgr.resume(tx);
+          txmgr.internalResume(tx);
         }
       }
     }
